@@ -14,7 +14,10 @@ msname_source = "/data/scratch/montes/simulation/COSMOS_20130219_sim_source.MS"
 
 threshold = 5.
 
-class MeasurementSet(object):
+class SimulationSet(object):
+    """
+
+    """
     # Indexes of the correlations
     corrind = {"XX":0,"XY":1,"YX":2,"YY":3}
     def __init__(self,msname):
@@ -37,12 +40,45 @@ class MeasurementSet(object):
                                                         (self.ntimes,self.nbaselines))[:,self.uvorder][:,self.nantennas:]
 
 
+def threshold(SS,threshold=5.):
+    """
+    computes the number of measurements above the threshold for a given correlation.
+    """
+    total_points = float(SS.ntimes*SS.nbaselines_cor)
+    n_affected = numpy.zeros((SS.nchannels,SS.ncors),dtype=float)
+    for i in range(SS.nchannels):
+        for j in range(SS.ncors):
+            n_affected[i,j] = numpy.count_nonzero(numpy.array((SS.amplitude[i,j,:,:] >= threshold),dtype = int))
+    return n_affected/total_points
+
+
+def compare(SS_A,SS_source,level=0.01):
+    """
+    computes the number of measurements where the first source has a value "level" times higher
+    than the second source.
+    """
+    # Check if the two simulations are compatible
+    assert SS_A.ntimes == SS_source.ntimes
+    assert SS_A.nbaselines_cor == SS_source.nbaselines_cor
+    assert SS_A.nchannels == SS_source.nchannels
+    assert SS_A.ncors == SS_source.ncors
+
+    total_points = float(SS_A.ntimes*SS_A.nbaselines_cor)
+    n_affected = numpy.zeros((SS_A.nchannels,SS_A.ncors),dtype=float)
+    for i in range(SS_A.nchannels):
+        for j in range(SS_A.ncors):
+            n_affected[i,j] = numpy.count_nonzero(numpy.array(SS_A.amplitude[i,j,:,:] >= SS_source.amplitude[i,j,:,:])
+                ,dtype = int))
+    return n_affected/total_points
+
+
 if __name__ == "__main__":
-    cyga = MeasurementSet(msname_cyga)
-    #source = MeasurementSet(msname_source)
+    cyga = SimulationSet(msname_cyga)
+    source = SimulationSet(msname_source)
+    per_affected = threshold(cyga)
     for i in range(cyga.nchannels):
-        n_affectedxx = numpy.count_nonzero(numpy.array((cyga.amplitude[i,0,:,:] >= threshold),dtype = int))
-        n_affectedyy = numpy.count_nonzero(numpy.array((cyga.amplitude[i,3,:,:] >= threshold),dtype = int))
-        total_points = cyga.ntimes*cyga.nbaselines_cor
-        print "Freq: %i XX:%f %% YY: %f %%"%(i,n_affectedxx/total_points,n_affectedyy/total_points)
+        print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i,per_affected[i,0]*100.,per_affected[i,3]*100.)
+    per_compared = compare(cyga,source,level=0.1)
+    for i in range(cyga.nchannels):
+        print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i,per_compared[i,0]*100.,per_compared[i,3]*100.)
 
