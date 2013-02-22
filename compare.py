@@ -21,12 +21,12 @@ class SimulationSet(object):
     corrind = {"XX": 0, "XY": 1, "YX": 2, "YY": 3}
 
     def __init__(self, msname):
-        self.table = tbl.table(msname)
-        self.model_data = self.table.getcol('MODEL_DATA')
-        self.uvw = self.table.getcol('UVW')
+        table = tbl.table(msname)
+        self.model_data = table.getcol('MODEL_DATA')
+        self.uvw = table.getcol('UVW')
         self.uvdist = numpy.sqrt(self.uvw[:,0]**2+self.uvw[:,1]**2)
-        self.ntimes = len(numpy.unique(self.table.getcol('TIME')))
-        self.nantennas = len(numpy.unique(self.table.getcol('ANTENNA1')))
+        self.ntimes = len(numpy.unique(table.getcol('TIME')))
+        self.nantennas = len(numpy.unique(table.getcol('ANTENNA1')))
         self.nbaselines = self.nantennas*(self.nantennas+1)/2
         self.nbaselines_cor = self.nantennas*(self.nantennas-1)/2
         self.uvorder = numpy.argsort(self.uvdist[0:self.nbaselines])
@@ -45,29 +45,29 @@ def threshold(SS,threshold=5.):
     computes the fraction of measurements above the threshold for a given correlation.
     """
     total_points = float(SS.ntimes*SS.nbaselines_cor)
-    n_affected = numpy.zeros((SS.nchannels,SS.ncors),dtype=float)
+    n_affected = numpy.zeros((SS.nchannels,SS.ncors), dtype=float)
     for i in range(SS.nchannels):
         for j in range(SS.ncors):
-            n_affected[i,j] = numpy.count_nonzero(numpy.array((SS.amplitude[i,j,:,:] >= threshold),dtype = int))
+            n_affected[i,j] = numpy.count_nonzero(numpy.array((SS.amplitude[i,j,:,:] >= threshold), dtype=int))
     return n_affected/total_points
 
 
-def threshold_axis(SS,threshold=5.,axis=0):
+def threshold_axis(SS,threshold=5.,axis=1):
     """
     computes statistics for the measurements above the threshold for a given correlation
-    with respect to an axis (by default axis 0 or time).
+    with respect to an axis (by default axis 1 or time).
     It returns the whole measure.
     """
     if axis == 0:
-        naxis = SS.ntimes
-        total_points = float(SS.nbaselines_cor)
-    else:
         naxis = SS.nbaselines_cor
         total_points = float(SS.ntimes)
-    n_affected = numpy.zeros((SS.nchannels,SS.ncors,naxis),dtype=float)
+    else:
+        naxis = SS.ntimes
+        total_points = float(SS.nbaselines_cor)
+    n_affected = numpy.zeros((SS.nchannels,SS.ncors,naxis), dtype=float)
     for i in range(SS.nchannels):
         for j in range(SS.ncors):
-            n_affected[i,j,:] = numpy.sum(numpy.array((SS.amplitude[i,j,:,:] >= threshold),dtype = int),axis=axis)
+            n_affected[i,j,:] = numpy.sum(numpy.array((SS.amplitude[i,j,:,:] >= threshold), dtype = int), axis=axis)
     return n_affected/total_points
 
 
@@ -83,7 +83,7 @@ def compare(SS_A,SS_source,level=0.01):
     assert SS_A.ncors == SS_source.ncors
 
     total_points = float(SS_A.ntimes*SS_A.nbaselines_cor)
-    n_affected = numpy.zeros((SS_A.nchannels,SS_A.ncors),dtype=float)
+    n_affected = numpy.zeros((SS_A.nchannels,SS_A.ncors), dtype=float)
     for i in range(SS_A.nchannels):
         for j in range(SS_A.ncors):
             n_affected[i,j] = numpy.count_nonzero(numpy.array(SS_A.amplitude[i,j,:,:] >=
