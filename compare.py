@@ -6,7 +6,7 @@ Selection of percentage of subbands and times affected by an A-team source.
 __author__ = 'jsm'
 import pyrap.tables as tbl
 import numpy
-
+import argparse
 
 # Location of the testing MS in lce012
 msname_cyga = "/data/scratch/montes/simulation/COSMOS_20130219_sim_CygA.MS"
@@ -92,8 +92,19 @@ def compare(SS_A,SS_source,level=0.01):
 
 
 if __name__ == "__main__":
-    cyga = SimulationSet(msname_cyga)
-    source = SimulationSet(msname_source)
+    parser = argparse.ArgumentParser(description='Percentage of data affected by an A-team source')
+    #parser.add_argument('-c','--cache',help='use a local cache to store and retrieve the data',action="store_true")
+    parser.add_argument('ateam',metavar='ateam',required=True,help='MS of the source')
+    parser.add_argument('-t','--threshold',type=float,default=5.,help='threshold')
+    parser.add_argument('-s','--source',help='MS of target source')
+    parser.add_argument('-l','--level',type=float,default=0.05,
+                        help='ratio between the A-team data and source data')
+
+    args = parser.parse_args(["-s",msname_source,msname_cyga])
+
+    cyga = SimulationSet(args.ateam)
+    source = SimulationSet(args.source)
+
     per_affected = threshold(cyga)
     for i in range(cyga.nchannels):
         print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i, per_affected[i,0]*100., per_affected[i,3]*100.)
