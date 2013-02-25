@@ -1,7 +1,5 @@
 """
 Selection of percentage of subbands and times affected by an A-team source.
- The first version will just apply a threshold (i.e. 5 Jy) to select data points
- affected by the A-team source.
 """
 __author__ = 'jsm'
 import pyrap.tables as tbl
@@ -44,6 +42,7 @@ def threshold(SS,threshold=5.):
     """
     computes the fraction of measurements above the threshold for a given correlation.
     """
+    #TODO: Merge with threshold_axis
     total_points = float(SS.ntimes*SS.nbaselines_cor)
     n_affected = numpy.zeros((SS.nchannels,SS.ncors), dtype=float)
     for i in range(SS.nchannels):
@@ -91,28 +90,58 @@ def compare(SS_A,SS_source,level=0.01):
     return n_affected/total_points
 
 
+#### Output ####
+def print_threshold(a_ss,th):
+    """
+    Prints the percentage of affected data (maximum with respect to the time by default)
+    for each channel using a threshold in the flux density
+    """
+    #TODO: Choose the statistics used
+    per_affected = threshold_axis(a_ss,threshold=th)
+    print "==================================="
+    print "Flux density threshold: %f"%th
+    for i in range(a_ss.nchannels):
+        print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i, numpy.max(per_affected[i,0,:])*100.,
+                                                   numpy.max(per_affected[i,3,:])*100.)
+
+
+def print_comparison(a_ss,source_ss,level):
+    """
+    Prints the total percentage of affected data for each channel by comparing with
+    the source observed.
+    """
+    #TODO: Add statistics with respect to time.
+    per_compared = compare(a_ss,source_ss,level=level)
+    print "==================================="
+    print "Comparison with source. Level: %f"%level
+    for i in range(a_ss.nchannels):
+        print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i, per_compared[i,0]*100., per_compared[i,3]*100.)
+
+
+def main(args):
+    cyga = SimulationSet(args.ateam)
+    for t in args.threshold:
+        print_threshold(cyga,t)
+    if args.source is not None:
+        source = SimulationSet(args.source)
+        for l in args.level:
+            print_comparison(cyga,source,l)
+
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Percentage of data affected by an A-team source')
     #parser.add_argument('-c','--cache',help='use a local cache to store and retrieve the data',action="store_true")
-    parser.add_argument('ateam',metavar='ateam',required=True,help='MS of the source')
-    parser.add_argument('-t','--threshold',type=float,default=5.,help='threshold')
-    parser.add_argument('-s','--source',help='MS of target source')
-    parser.add_argument('-l','--level',type=float,default=0.05,
-                        help='ratio between the A-team data and source data')
+    parser.add_argument('ateam',metavar='ateam.MS',help='MS of the source')
+    parser.add_argument('-t','--threshold',type=float,default=[5.],nargs='+',help='threshold(s)')
+    parser.add_argument('-s','--source',metavar='source.MS',help='MS of target source')
+    parser.add_argument('-l','--level',type=float,default=[0.05],nargs='+',
+                        help='ratio(s) between the A-team data and source data')
 
-    args = parser.parse_args(["-s",msname_source,msname_cyga])
+    #args = parser.parse_args(["-s",msname_source,msname_cyga])
+    args = parser.parse_args()
 
-    cyga = SimulationSet(args.ateam)
-    source = SimulationSet(args.source)
+    main(args)
 
-    per_affected = threshold(cyga)
-    for i in range(cyga.nchannels):
-        print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i, per_affected[i,0]*100., per_affected[i,3]*100.)
-    per_compared = compare(cyga,source,level=0.1)
-    for i in range(cyga.nchannels):
-        print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i, per_compared[i,0]*100., per_compared[i,3]*100.)
-    per_affected2 = threshold_axis(cyga)
-    for i in range(cyga.nchannels):
-        print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i,
-               numpy.max(per_affected2[i,0,:])*100., numpy.max(per_affected2[i,3,:])*100.)
+
 
