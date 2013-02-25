@@ -65,6 +65,7 @@ def threshold_stats(SS,threshold=5.,axis=1,nfunc="max"):
     for i in range(SS.nchannels):
         for j in range(SS.ncors):
             stats[i,j] = dirfuncs[nfunc](th_axis[i,j,:]/t_points*100.)
+    return stats
 
 
 def compare(SS_A,SS_source,level=0.01):
