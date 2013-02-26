@@ -1,9 +1,10 @@
 """
 Simulation of the observation
 """
+from __future__ import print_function
 __author__ = 'jsm'
 import argparse
-import subprocess
+#import subprocess
 import getpass
 import os
 
@@ -86,7 +87,8 @@ def makems_file(overwrite=True):
         outfile.write(template_makebeam%params)
         outfile.close()
     else:
-        raise IOError("File makems parset already exists")
+        print("File %(makems_parset)s already exists"%params)
+        #raise IOError("File makems parset already exists")
 
 
 def makems_command(overwrite=True):
@@ -110,7 +112,8 @@ def simulation_file(overwrite=True):
         outfile.write(template_predict%source_params)
         outfile.close()
     else:
-        raise IOError("File predict parset already exists")
+        print("File %(sim_parset)s already exists"%source_params)
+        #raise IOError("File predict parset already exists")
 
 
 def copy_ms_command(overwrite=True):
@@ -157,12 +160,12 @@ def update_obs_params(args):
     params.update({"makems_parset":"%(path)s/makems_%(name)s_%(array)s.parset"%params})
 
 
-def update_source_params(source):
+def update_source_params(source,default_skymodel):
     """
-    Create the dictionary with the parameters for the source simulated
+    Create the dictionary with the parameters for the simulated source(s)
     """
     source_params.update({"sim_name":params["sim_ms"].split(".")[0]+"_%s.MS"%source,
-                          "skymodel":source_model.get(source),
+                          "skymodel":source_model.get(source,default_skymodel),
                           "source_patch":source_name.get(source,source),
                           "source":source,
                           "logfile":"log_%s_%s.txt"%(params["name"],source),
@@ -171,9 +174,12 @@ def update_source_params(source):
                           "full_sim_parset":"%(path)s/%(sim_parset)s"%source_params})
 
 
-def create_path():
-    if not os.path.exists(params["path"]):
-        os.makedirs(params["path"])
+def create_path(path):
+    """
+    Creates a path if it does not exist
+    """
+    if not os.path.exists(path):
+        os.makedirs(path)
 
 
 def main(args):
@@ -181,20 +187,20 @@ def main(args):
     source_params.update({"path":args.path})
     update_obs_params(args)
     overwrite = args.overwrite
-    create_path()
+    create_path(params["path"])
     # Create simulation parset
     makems_file(overwrite)
     # Create base simulation
-    print makems_command(overwrite)
+    print(makems_command(overwrite))
     if args.sources is not None:
         for s in args.sources:
-            update_source_params(s)
+            update_source_params(s,args.sky_model)
             # Copy dataset
-            print copy_ms_command(overwrite)
+            print(copy_ms_command(overwrite))
             # Create simulation parset
             simulation_file(overwrite)
             # Simulate data
-            print simulation_command()
+            print(simulation_command())
 
 
 if __name__ == "__main__":
@@ -202,8 +208,8 @@ if __name__ == "__main__":
     parser.add_argument('--ra',required=True,help='right ascension of the field')
     parser.add_argument('--dec',required=True,help='declination of the field')
     parser.add_argument('--time',required=True,help='start date and time of the observation')
-    parser.add_argument('--n-time',type=int,default=1800,help='duration of the observation in multiples of 10 seconds. '
-                        'The default value is 1800 (5 hours)')
+    parser.add_argument('--n-time',type=int,default=1800,help='duration of the observation in multiples '
+                        'of 10 seconds. The default value is 1800 (5 hours)')
     parser.add_argument('--name',help='name of the observed field and prefix of the output')
     parser.add_argument('--sources',nargs='*',help='name of the source(s) to simulate. There are default '
                         'skymodels for CygA, CasA (long run), CasA4, HydraA, HerA, TauA, VirA, 3C297 or 3C53.')
