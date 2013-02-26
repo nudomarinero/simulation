@@ -144,7 +144,7 @@ def update_obs_params(args):
     # Update the observation data
     d = {"ra":args.ra,"dec":args.dec,"start_time":args.time,"n_time":args.n_time}
     # Get name
-    date_string = "".join(args.start_time.split("/")[0:3])
+    date_string = "".join(args.time.split("/")[0:3])
     if args.name is None:
         d.update({"name":date_string}) # TODO: Upgrade default naming scheme
     else:
@@ -163,12 +163,17 @@ def update_source_params(source):
     """
     source_params.update({"sim_name":params["sim_ms"].split(".")[0]+"_%s.MS"%source,
                           "skymodel":source_model.get(source),
-                          "source_path":source_name.get(source,source),
+                          "source_patch":source_name.get(source,source),
                           "source":source,
                           "logfile":"log_%s_%s.txt"%(params["name"],source),
-                          "sim_parset":"%s/predict_%s.parset"%(params["path"],source)})
+                          "sim_parset":"predict_%s.parset"%(source)})
     source_params.update({"full_sim_name":"%(path)s/%(sim_name)s"%source_params,
                           "full_sim_parset":"%(path)s/%(sim_parset)s"%source_params})
+
+
+def create_path():
+    if not os.path.exists(params["path"]):
+        os.makedirs(params["path"])
 
 
 def main(args):
@@ -176,6 +181,7 @@ def main(args):
     source_params.update({"path":args.path})
     update_obs_params(args)
     overwrite = args.overwrite
+    create_path()
     # Create simulation parset
     makems_file(overwrite)
     # Create base simulation
@@ -196,7 +202,7 @@ if __name__ == "__main__":
     parser.add_argument('--ra',required=True,help='right ascension of the field')
     parser.add_argument('--dec',required=True,help='declination of the field')
     parser.add_argument('--time',required=True,help='start date and time of the observation')
-    parser.add_argument('--n-time',default=1800,help='duration of the observation in multiples of 10 seconds. '
+    parser.add_argument('--n-time',type=int,default=1800,help='duration of the observation in multiples of 10 seconds. '
                         'The default value is 1800 (5 hours)')
     parser.add_argument('--name',help='name of the observed field and prefix of the output')
     parser.add_argument('--sources',nargs='*',help='name of the source(s) to simulate. There are default '

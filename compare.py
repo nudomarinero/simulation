@@ -103,6 +103,8 @@ def print_threshold(a_ss,th,nfunc="max",allcor=False):
             print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i,
                     per_affected[i,0],per_affected[i,3])
         else:
+            print [per_affected[i,j] for j in range(a_ss.ncors)]
+            print [i].extend([per_affected[i,j] for j in range(a_ss.ncors)])
             print "Freq: %2i XX: %6.2f%% XY: %6.2f%% YX: %6.2f%% YY: %6.2f%%"%\
                   [i].extend([per_affected[i,j] for j in range(a_ss.ncors)])
 
