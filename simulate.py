@@ -53,11 +53,7 @@ params_obs = {"ra":"10:08:00.0","dec":"07.30.16.35","start_time":"2013/02/19/22:
 params_hba = {"n_freq":14,"start_freq":"110e6","step_freq":"5e6","array":"HBA",
               "antenna":"~weeren/scripts/ANTENNA_HBA","antenna_conf":"HBA_DUAL_INNER"}
 params_lba = {"n_freq":12,"start_freq":"15e6","step_freq":"5e6","array":"LBA",
-<<<<<<< HEAD
               "antenna":"~weeren/scripts/ANTENNA_LBA","antenna_conf":"LBA_OUTER"}
-=======
-              "antenna":"~weeren/scripts/ANTENNA_LBA","antenna_conf":"LBA_DUAL_INNER"} # TODO: CHECK
->>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
 
 params.update(params_obs) # Set of default values for an observation
 
@@ -67,10 +63,7 @@ source_model = {"CygA":"~montes/xmm/3C237_demix.skymodel",
                 "CasA4":"~weeren/scripts/Ateam_LBA_CC.skymodel",
                 "HydraA":"/opt/lofar/share/pipeline/skymodels/Ateam_LBA_CC.skymodel",
                 "VirA":"/opt/lofar/share/pipeline/skymodels/Ateam_LBA_CC.skymodel",
-<<<<<<< HEAD
                 "VirA4":"/opt/lofar/share/pipeline/skymodels/Ateam_LBA_CC.skymodel",
-=======
->>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
                 "TauA":"/opt/lofar/share/pipeline/skymodels/Ateam_LBA_CC.skymodel",
                 "HerA":"/opt/lofar/share/pipeline/skymodels/Ateam_LBA_CC.skymodel",
                 "3C237":"~montes/xmm/3C237_demix.skymodel",
@@ -78,10 +71,7 @@ source_model = {"CygA":"~montes/xmm/3C237_demix.skymodel",
 # Names of the models within the file
 source_name = {"CygA":"CygA_LBAHR",
                "CasA4":"CasA_4_patch",
-<<<<<<< HEAD
                "VirA4":"VirA_4_patch",
-=======
->>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
                "CasA":"CasA_LBAHR"}
 source_params = {}
 
