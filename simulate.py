@@ -57,7 +57,6 @@ params_lba = {"n_freq":12,"start_freq":"15e6","step_freq":"5e6","array":"LBA",
 
 params.update(params_obs) # Set of default values for an observation
 
-# Location of the models. TODO: Update the location of the models
 source_model = {"CygA":"~montes/xmm/3C237_demix.skymodel",
                 "CasA":"~montes/xmm/3C237_demix.skymodel",
                 "CasA4":"~weeren/scripts/Ateam_LBA_CC.skymodel",
@@ -66,6 +65,9 @@ source_model = {"CygA":"~montes/xmm/3C237_demix.skymodel",
                 "VirA4":"/opt/lofar/share/pipeline/skymodels/Ateam_LBA_CC.skymodel",
                 "TauA":"/opt/lofar/share/pipeline/skymodels/Ateam_LBA_CC.skymodel",
                 "HerA":"/opt/lofar/share/pipeline/skymodels/Ateam_LBA_CC.skymodel",
+                "3C295":"/globaldata/COOKBOOK/Models/3C295_TWO_MSSS.skymodel",
+                "3C48":"/globaldata/COOKBOOK/Models/3C48_MSSS.skymodel",
+                "3C196":"/globaldata/COOKBOOK/Models/3C196_MSSS.skymodel",
                 "3C237":"~montes/xmm/3C237_demix.skymodel",
                 "3C53":"~montes/xmm/3C53_CasA_demix.skymodel"}
 # Names of the models within the file
@@ -89,7 +91,7 @@ def makems_file(overwrite=True):
         outfile.write(template_makebeam%params)
         outfile.close()
     else:
-        print("File %(makems_parset)s already exists"%params)
+        print("# File %(makems_parset)s already exists;"%params)
         #raise IOError("File makems parset already exists")
 
 
@@ -114,7 +116,7 @@ def simulation_file(overwrite=True):
         outfile.write(template_predict%source_params)
         outfile.close()
     else:
-        print("File %(sim_parset)s already exists"%source_params)
+        print("# File %(sim_parset)s already exists;"%source_params)
         #raise IOError("File predict parset already exists")
 
 

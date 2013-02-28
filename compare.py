@@ -87,7 +87,8 @@ def threshold_stats(SS,threshold=5.,level=0.1,axis=1,nfunc="median"):
 def print_threshold(a_ss,th,level=0.1,nfunc="median",allcor=False):
     """
     Prints the percentage of affected data (maximum with respect to the time by default)
-    for each channel using a threshold in the flux density
+    for each channel using a threshold in the flux density or a comparison with an
+    additional source
     """
     per_affected = threshold_stats(a_ss,threshold=th,level=level,nfunc=nfunc)
     print "==================================="
@@ -101,6 +102,22 @@ def print_threshold(a_ss,th,level=0.1,nfunc="median",allcor=False):
                   [i].extend([per_affected[i,j]*100. for j in range(a_ss.ncors)])
 
 
+def plot_threshold(a_ss,th,level=0.1,plotname=""):
+    """
+    Plot of the percentage of affected data with respect to time for each frequency
+    channel.
+    """
+    import pylab
+    th_axis,t_points = threshold_axis(a_ss,threshold=th,level=level)
+    per_affected = th_axis/t_points
+    data = []
+    for i in a_ss.nchannels:
+        for j in [0,3]:
+            data.append(per_affected[i,j,:])
+    pylab.boxplot(data)
+    pylab.show()
+
+
 def main(args):
     cyga = SimulationSet(args.ateam)
     if args.threshold is not []:
@@ -110,6 +127,9 @@ def main(args):
         source = SimulationSet(args.source)
         for l in args.level:
             print_threshold(cyga,source,level=l,nfunc=args.stat_function,allcor=args.all_correlations)
+    # Plot of the first threshold
+    if args.plot:
+        plot_threshold(cyga,args.threshold[0])
 
 
 
@@ -127,7 +147,7 @@ if __name__ == "__main__":
                              '{max,min,median,std,mean}. The function used by default is the median')
     parser.add_argument('--all-correlations',action="store_true",help='correlations considered '
                             '(not working yet)') # Not used yet
-    #parser.add_argument('-p','--plot',action="store_true",help='produce plots') # Not used yet
+    parser.add_argument('-p','--plot',action="store_true",default=False,help='produce plots')
 
     #args = parser.parse_args(["-s",msname_source,msname_cyga])
     args = parser.parse_args()
