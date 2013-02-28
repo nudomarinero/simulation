@@ -68,7 +68,7 @@ def threshold_axis(SS,threshold=5.,level=0.1,axis=1):
     return n_affected,total_points
 
 
-def threshold_stats(SS,threshold=5.,level=0.1,axis=1,nfunc="max"):
+def threshold_stats(SS,threshold=5.,level=0.1,axis=1,nfunc="median"):
     """
     Applies the statistical function defined by nfunc (by default 'max') to the
     output of threshold_axis
@@ -84,7 +84,7 @@ def threshold_stats(SS,threshold=5.,level=0.1,axis=1,nfunc="max"):
 
 
 #### Output ####
-def print_threshold(a_ss,th,level=0.1,nfunc="max",allcor=False):
+def print_threshold(a_ss,th,level=0.1,nfunc="median",allcor=False):
     """
     Prints the percentage of affected data (maximum with respect to the time by default)
     for each channel using a threshold in the flux density
@@ -122,10 +122,11 @@ if __name__ == "__main__":
     parser.add_argument('-s','--source',metavar='source.MS',help='MS of target source')
     parser.add_argument('-l','--level',type=float,default=[0.05],nargs='+',
                         help='ratio(s) between the A-team data and source data')
-    parser.add_argument('-f','--stat-function',type=str,default='max',
+    parser.add_argument('-f','--stat-function',type=str,default='median',
                         help='statistical function used for the threshold. It can be chosen between '
-                             '{max,min,median,std,mean}')
-    parser.add_argument('--all-correlations',action="store_true",help='correlations considered') # Not used yet
+                             '{max,min,median,std,mean}. The function used by default is the median')
+    parser.add_argument('--all-correlations',action="store_true",help='correlations considered '
+                            '(not working yet)') # Not used yet
     #parser.add_argument('-p','--plot',action="store_true",help='produce plots') # Not used yet
 
     #args = parser.parse_args(["-s",msname_source,msname_cyga])
