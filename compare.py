@@ -7,8 +7,13 @@ import numpy
 import argparse
 
 # Location of the testing MS in lce012
+<<<<<<< HEAD
 msname_cyga = "/data/scratch/montes/simulation/COSMOS_20130219_sim_CygA.MS"
 msname_source = "/data/scratch/montes/simulation/COSMOS_20130219_sim_source.MS"
+=======
+#msname_cyga = "/data/scratch/montes/simulation/COSMOS_20130219_sim_CygA.MS"
+#msname_source = "/data/scratch/montes/simulation/COSMOS_20130219_sim_source.MS"
+>>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
 
 
 class SimulationSet(object):
@@ -38,10 +43,19 @@ class SimulationSet(object):
                                                 (self.ntimes, self.nbaselines))[:,self.uvorder][:,self.nantennas:]
 
 
+<<<<<<< HEAD
 def threshold_axis(SS,threshold=5.,axis=1):
     """
     Computes statistics for the measurements above the threshold for all the correlations
     with respect to an axis (by default axis 1 or time).
+=======
+def threshold_axis(SS,threshold=5.,level=0.1,axis=1):
+    """
+    Computes statistics for the measurements above the threshold for all the correlations
+    with respect to an axis (by default axis 1 or time).
+    The threshold can be a number or a Simulation Set. In this case the level is applied
+    to the Simulation Set to compute the final threshold.
+>>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
     It returns a list of all the measures and the total number of points in the bins.
     """
     if axis == 0:
@@ -51,6 +65,7 @@ def threshold_axis(SS,threshold=5.,axis=1):
         naxis = SS.ntimes
         total_points = float(SS.nbaselines_cor)
     n_affected = numpy.zeros((SS.nchannels,SS.ncors,naxis), dtype=float)
+<<<<<<< HEAD
     for i in range(SS.nchannels):
         for j in range(SS.ncors):
             n_affected[i,j,:] = numpy.sum(numpy.array((SS.amplitude[i,j,:,:] >= threshold), dtype = int), axis=axis)
@@ -91,16 +106,55 @@ def compare(SS_A,SS_source,level=0.01):
 
 #### Output ####
 def print_threshold(a_ss,th,nfunc="max",allcor=False):
+=======
+    # threshold can be a number or a Simulation Set
+    if isinstance(threshold,SimulationSet):
+        assert SS.ntimes == threshold.ntimes
+        assert SS.nbaselines_cor == threshold.nbaselines_cor
+        assert SS.nchannels == threshold.nchannels
+        assert SS.ncors == threshold.ncors
+        th = level*threshold.amplitude
+    else:
+        th = numpy.ones_like(SS.amplitude)*threshold
+    for i in range(SS.nchannels):
+        for j in range(SS.ncors):
+            n_affected[i,j,:] = numpy.sum(numpy.array((SS.amplitude[i,j,:,:] >= th[i,j,:,:]), dtype = int), axis=axis)
+    return n_affected,total_points
+
+
+def threshold_stats(SS,threshold=5.,level=0.1,axis=1,nfunc="max"):
+    """
+    Applies the statistical function defined by nfunc (by default 'max') to the
+    output of threshold_axis
+    """
+    dirfuncs = {"max":numpy.max,"min":numpy.min,"std":numpy.std,
+                "mean":numpy.mean,"median":numpy.median}
+    th_axis,t_points = threshold_axis(SS,threshold=threshold,level=level,axis=axis)
+    stats = numpy.zeros((SS.nchannels,SS.ncors),dtype=float)
+    for i in range(SS.nchannels):
+        for j in range(SS.ncors):
+            stats[i,j] = dirfuncs[nfunc](th_axis[i,j,:]/t_points)
+    return stats
+
+
+#### Output ####
+def print_threshold(a_ss,th,level=0.1,nfunc="max",allcor=False):
+>>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
     """
     Prints the percentage of affected data (maximum with respect to the time by default)
     for each channel using a threshold in the flux density
     """
+<<<<<<< HEAD
     per_affected = threshold_stats(a_ss,threshold=th,nfunc=nfunc)
+=======
+    per_affected = threshold_stats(a_ss,threshold=th,level=level,nfunc=nfunc)
+>>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
     print "==================================="
     print "Flux density threshold: %f"%th
     for i in range(a_ss.nchannels):
         if not allcor:
             print "Freq: %2i XX: %6.2f%% YY: %6.2f%%"%(i,
+<<<<<<< HEAD
                     per_affected[i,0],per_affected[i,3])
         else:
             print [per_affected[i,j] for j in range(a_ss.ncors)]
@@ -124,6 +178,12 @@ def print_comparison(a_ss,source_ss,level,allcor=False):
         else:
             print "Freq: %2i XX: %6.2f%% XY: %6.2f%% YX: %6.2f%% YY: %6.2f%%"% \
                   [i].extend([per_compared[i,j]*100. for j in range(a_ss.ncors)])
+=======
+                    per_affected[i,0]*100.,per_affected[i,3]*100.)
+        else:
+            print "Freq: %2i XX: %6.2f%% XY: %6.2f%% YX: %6.2f%% YY: %6.2f%%"%\
+                  [i].extend([per_affected[i,j]*100. for j in range(a_ss.ncors)])
+>>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
 
 
 def main(args):
@@ -134,7 +194,11 @@ def main(args):
     if args.source is not None:
         source = SimulationSet(args.source)
         for l in args.level:
+<<<<<<< HEAD
             print_comparison(cyga,source,l,allcor=args.all_correlations)
+=======
+            print_threshold(cyga,source,level=l,nfunc=args.stat_function,allcor=args.all_correlations)
+>>>>>>> c794cddc62d4e28178ae13cedda628f0b9fa8227
 
 
 
