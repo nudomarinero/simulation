@@ -12,7 +12,7 @@ import os
 
 user = getpass.getuser()
 #Default directory
-default_path = "/data/scratch/%s/simulation2"%user
+default_path = "/data/scratch/%s/simulation"%user
 
 template_makebeam = """
 NParts=0
