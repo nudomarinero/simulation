@@ -33,9 +33,10 @@ Dependencies and location
 The software depends on several Python modules that are already
 installed in the LOFAR clusters. 
 
-At the moment it can be found in the directory ~montes/xmm/simulations.
-It is a git repository so you can obtain a copy using:
-git clone ~montes/xmm/simulations
+At the moment it can be found in the directory ~montes/xmm/simulation.
+It is a git repository so you could obtain a copy using:
+git clone ~montes/xmm/simulation
+but you do not need to do that in order to run the software.
 
 Usage of simulate.py
 --------------------
@@ -49,7 +50,7 @@ needed to allow the overwriting of parset and MS files. The sources to
 be simulated can be specified after the option --source. Currently, it
 is possible to specify CygA, CasA4, TauA, VirA4, HydraA. It is also
 possible to use CasA and VirA but the simulation can be very slow. The
-sources 3C53 and 3C237 are also included. The data are store in 
+sources 3C53 and 3C237 are also included. The data are stored in
 /data/scratch/<user_name>/simulation/ by default but an alternative
 location can be specified with the option --path. Finally, the script
 generates by default the files for an HBA observation, if the option
@@ -61,7 +62,7 @@ screen and must be executed by the user.
 
 Example
 
-python ~montes/xmm/simulations/simulate.py --ra 10:47:00.0 \
+python ~montes/xmm/simulation/simulate.py --ra 10:47:00.0 \
 --dec 58.05.00.0 --time 2013/03/03/19:00:00 --n-time 3600 \
 --name Lockman_Hole_field --source CasA4 CygA TauA VirA4 \
 --overwrite --lba
@@ -86,7 +87,7 @@ for the XX and YY croscorrelations.
 
 Example
 
-python  ~montes/xmm/simulations/compare.py \
+python  ~montes/xmm/simulation/compare.py \
 /data/scratch/montes/simulation/20130303_Lockman_Hole_field_LBA_CygA.MS \
 -t 2.5 5. 10. -f "median"
 
@@ -99,7 +100,7 @@ stronger than "level" times the flux of the central source.
 
 Example
 
-python  ~montes/xmm/simulations/compare.py \
+python  ~montes/xmm/simulation/compare.py \
 /data/scratch/montes/simulation/COSMOS_20130219_sim_CygA.MS \
 -s/data/scratch/montes/simulation/COSMOS_20130219_sim_source.MS \
 -l 0.01 0.1 0.5 1. -f "median"
