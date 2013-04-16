@@ -111,7 +111,7 @@ def plot_threshold(a_ss,th,level=0.1,plotname=""):
     th_axis,t_points = threshold_axis(a_ss,threshold=th,level=level)
     per_affected = th_axis/t_points
     data = []
-    for i in a_ss.nchannels:
+    for i in range(a_ss.nchannels):
         for j in [0,3]:
             data.append(per_affected[i,j,:])
     pylab.boxplot(data)
