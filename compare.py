@@ -102,21 +102,51 @@ def print_threshold(a_ss,th,level=0.1,nfunc="median",allcor=False):
                   [i].extend([per_affected[i,j]*100. for j in range(a_ss.ncors)])
 
 
-def plot_threshold(a_ss,th,level=0.1,plotname=""):
+# def plot_threshold(a_ss,th,level=0.1,plotname=""):
+#     """
+#     Plot of the percentage of affected data with respect to time for each frequency
+#     channel.
+#     """
+#     import pylab
+#     th_axis,t_points = threshold_axis(a_ss,threshold=th,level=level)
+#     per_affected = th_axis/t_points
+#     data = []
+#     for i in a_ss.nchannels:
+#         for j in [0,3]:
+#             data.append(per_affected[i,j,:])
+#     pylab.boxplot(data)
+#     pylab.show()
+
+def rebin(a, shape):
+    """
+    Rebin an array "a" to a new shape. The new values are obtained from the mean of the
+    corresponding elements of the original array.
+    2D version.
+    """
+    sh = shape[0],a.shape[0]//shape[0],shape[1],a.shape[1]//shape[1]
+    return a.reshape(sh).mean(-1).mean(1)
+
+def plot_threshold_time(SS,th,plotname=""):
     """
     Plot of the percentage of affected data with respect to time for each frequency
     channel.
     """
     import pylab
-    th_axis,t_points = threshold_axis(a_ss,threshold=th,level=level)
-    per_affected = th_axis/t_points
-    data = []
-    for i in range(a_ss.nchannels):
+    naxis = float(SS.ntimes)
+    total_points = SS.nbaselines_cor
+    n_affected = numpy.zeros((SS.nchannels,SS.ncors,naxis), dtype=float)
+    th = numpy.ones_like(SS.amplitude)*th
+    for i in range(SS.nchannels):
+        for j in range(SS.ncors):
+            n_affected[i,j,:] = numpy.sum(numpy.array((SS.amplitude[i,j,:,:] >= th[i,j,:,:]), dtype = int), axis=0)
+    affected = rebin(n_affected,(SS.nchannels,SS.ncors,naxis//30))
+    per_affected = affected/total_points
+    ls = {0:"-",1:":"}
+    for i in SS.nchannels:
+        pylab.subplot(SS.nchannels,1,i+1)
         for j in [0,3]:
-            data.append(per_affected[i,j,:])
-    pylab.boxplot(data)
+            pylab.plot(per_affected[i,j,:],ls=ls[j],color="b",marker=".")
     pylab.show()
-
 
 def main(args):
     cyga = SimulationSet(args.ateam)
@@ -129,7 +159,7 @@ def main(args):
             print_threshold(cyga,source,level=l,nfunc=args.stat_function,allcor=args.all_correlations)
     # Plot of the first threshold
     if args.plot:
-        plot_threshold(cyga,args.threshold[0])
+        plot_threshold_time(cyga,args.threshold[0])
 
 
 

@@ -67,6 +67,11 @@ python ~montes/xmm/simulation/simulate.py --ra 10:47:00.0 \
 --name Lockman_Hole_field --source CasA4 CygA TauA VirA4 \
 --overwrite --lba
 
+WARNING:
+The format used for "ra", "dec" and "time" is the same format
+that will be entered into the parset. Remember that the declination
+uses dots instead of colons.
+
 TODO:
   * Allow the direct execution of the commands by the script
   * Allow different antenna configurations. At the moment, the default
