@@ -77,6 +77,12 @@ source_name = {"CygA":"CygA_LBAHR",
                "CasA":"CasA_LBAHR"}
 source_params = {}
 
+#Antenna configurations 2013-04-17
+antenna_confs = ["LBA_INNER","LBA_OUTER","LBA_SPARSE_EVEN","LBA_SPARSE_ODD","LBA_X",
+                 "LBA_Y","HBA_ZERO","HBA_ONE","HBA_DUAL","HBA_JOINED","HBA_ZERO_INNER",
+                 "HBA_ONE_INNER","HBA_DUAL_INNER","HBA_JOINED_INNER"]
+
+
 ##############
 
 ## Mock MS commands
@@ -223,6 +229,9 @@ if __name__ == "__main__":
                         'simulation. By default %s'%default_path)
     parser.add_argument('--overwrite',action="store_true",default=False,help='overwrite existing files')
     parser.add_argument('--lba',action="store_true",default=False,help='LBA simulation (HBA by default)')
+    parser.add_argument('--antenna-conf',help='Antenna configuration (optional). The default antenna '
+                                              'configurations are HBA_DUAL_INNER for HBA and LBA_OUTER '
+                                              'for LBA.')
     # Add option for dry run ???
     #args = parser.parse_args(["-s",msname_source,msname_cyga])
     args = parser.parse_args()
