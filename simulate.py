@@ -166,6 +166,7 @@ def update_obs_params(args):
     # Get base simulation output name
     d.update({"sim_ms":"%s_%s_%s.MS"%(date_string,d["name"],params["array"])})
     d.update({"full_sim_ms":params["path"]+"/"+d["sim_ms"]})
+    # TODO: Add the update of the antenna configuration
     params.update(d)
     # Makems parset name
     params.update({"makems_parset":"%(path)s/makems_%(name)s_%(array)s.parset"%params})
