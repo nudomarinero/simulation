@@ -81,6 +81,7 @@ source_params = {}
 antenna_confs = ["LBA_INNER","LBA_OUTER","LBA_SPARSE_EVEN","LBA_SPARSE_ODD","LBA_X",
                  "LBA_Y","HBA_ZERO","HBA_ONE","HBA_DUAL","HBA_JOINED","HBA_ZERO_INNER",
                  "HBA_ONE_INNER","HBA_DUAL_INNER","HBA_JOINED_INNER"]
+antenna_ba = {ant:ant.split("_")[0] for ant in antenna_confs}
 
 
 ##############
@@ -192,14 +193,30 @@ def create_path(path):
         os.makedirs(path)
 
 
+# Command line parser
 def main(args):
     params.update({"path":args.path})
     source_params.update({"path":args.path})
+    if (args.antenna_conf is not None):
+        if (args.antenna_conf not in antenna_confs):
+            print("# WARNING: Possible problem with the antenna configuration: "
+                  "#  Undefined configuration.")
+        if ((args.antenna_conf.split("_")[0] == "LBA")and(not args.lba)):
+            print("# WARNING: Possible problem with the antenna configuration: "
+                  "#  HBA configuration in LBA simulation.")
+        if ((args.antenna_conf.split("_")[0] == "HBA")and(args.lba)):
+            print("# WARNING: Possible problem with the antenna configuration: "
+                  "#  LBA configuration in HBA simulation.")
     update_obs_params(args)
     overwrite = args.overwrite
-    create_path(params["path"])
+    # Create simulation path
+    if not args.dry_run:
+        create_path(params["path"])
     # Create simulation parset
-    makems_file(overwrite)
+    if not args.dry_run:
+        makems_file(overwrite)
+    else:
+        print("# Create makems file %(makems_parset)s;"%params)
     # Create base simulation
     print(makems_command(overwrite))
     if args.sources is not None:
@@ -208,7 +225,10 @@ def main(args):
             # Copy dataset
             print(copy_ms_command(overwrite))
             # Create simulation parset
-            simulation_file(overwrite)
+            if not args.dry_run:
+                simulation_file(overwrite)
+            else:
+                print("# Create simulation parset file %(sim_parset)s;"%source_params)
             # Simulate data
             print(simulation_command())
 
@@ -232,6 +252,8 @@ if __name__ == "__main__":
     parser.add_argument('--antenna-conf',help='Antenna configuration (optional). The default antenna '
                                               'configurations are HBA_DUAL_INNER for HBA and LBA_OUTER '
                                               'for LBA.')
+    parser.add_argument('--dry-run',action="store_true",default=False,help='Only show information. '
+                                                                           'Do not actually run anything.')
     # Add option for dry run ???
     #args = parser.parse_args(["-s",msname_source,msname_cyga])
     args = parser.parse_args()
