@@ -117,14 +117,6 @@ def print_threshold(a_ss,th,level=0.1,nfunc="median",allcor=False):
 #     pylab.boxplot(data)
 #     pylab.show()
 
-def rebin(a, shape):
-    """
-    Rebin an array "a" to a new shape. The new values are obtained from the mean of the
-    corresponding elements of the original array.
-    2D version.
-    """
-    sh = shape[0],a.shape[0]//shape[0],shape[1],a.shape[1]//shape[1]
-    return a.reshape(sh).mean(-1).mean(1)
 
 def plot_threshold_time(SS,th,plotname=""):
     """
@@ -138,14 +130,17 @@ def plot_threshold_time(SS,th,plotname=""):
     th = numpy.ones_like(SS.amplitude)*th
     for i in range(SS.nchannels):
         for j in range(SS.ncors):
-            n_affected[i,j,:] = numpy.sum(numpy.array((SS.amplitude[i,j,:,:] >= th[i,j,:,:]), dtype = int), axis=0)
-    affected = rebin(n_affected,(SS.nchannels,SS.ncors,naxis//30))
+            n_affected[i,j,:] = numpy.sum(numpy.array((SS.amplitude[i,j,:,:] >= th[i,j,:,:]), dtype = int), axis=1)
+    #print n_affected.shape
+    #print (SS.nchannels,SS.ncors,naxis/30)
+    affected = n_affected.reshape(SS.nchannels,SS.ncors,int(naxis/30),30).mean(-1)
     per_affected = affected/total_points
-    ls = {0:"-",1:":"}
-    for i in SS.nchannels:
-        pylab.subplot(SS.nchannels,1,i+1)
+    ls = {0:"-",3:"--"}
+    for i in range(SS.nchannels):
+        pylab.subplot(SS.nchannels//2,2,i+1)
         for j in [0,3]:
-            pylab.plot(per_affected[i,j,:],ls=ls[j],color="b",marker=".")
+            pylab.plot(per_affected[i,j,:],ls=ls[j],color="b",marker="")
+            pylab.ylim([0,0.5])
     pylab.show()
 
 def main(args):
