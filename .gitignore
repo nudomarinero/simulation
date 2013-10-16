@@ -1,9 +1,24 @@
-.idea
-.iml
-.swp
+# OS-specific
+.DS_Store
+.directory
+
+# Vim
 .*.s[a-w][a-z]
 *.un~
 Session.vim
 .netrwhist
 *~
-.directory
+
+# Vagrant temp
+.vagrant
+
+# Documentation
+doc/
+
+# IDE
+.idea/*
+*.iml
+
+# Python
+*.pyc
+

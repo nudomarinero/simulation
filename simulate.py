@@ -41,6 +41,7 @@ Strategy.Steps = [predict]
 
 Step.predict.Model.Sources         = [%(source_patch)s]
 Step.predict.Model.Gain.Enable     = F
+Step.predict.Model.Cache.Enable     = T
 Step.predict.Operation             = PREDICT
 Step.predict.Output.Column         = MODEL_DATA
 Step.predict.Model.Beam.Enable     = True
@@ -194,7 +195,8 @@ def create_path(path):
         os.makedirs(path)
 
 
-# Command line parser
+## Command line parser
+
 def main(args):
     params.update({"path":args.path})
     source_params.update({"path":args.path})
