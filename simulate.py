@@ -41,6 +41,7 @@ Strategy.Steps = [predict]
 
 Step.predict.Model.Sources         = [%(source_patch)s]
 Step.predict.Model.Gain.Enable     = F
+Step.predict.Model.Cache.Enable     = T
 Step.predict.Operation             = PREDICT
 Step.predict.Output.Column         = MODEL_DATA
 Step.predict.Model.Beam.Enable     = True
@@ -166,6 +167,7 @@ def update_obs_params(args):
     # Get base simulation output name
     d.update({"sim_ms":"%s_%s_%s.MS"%(date_string,d["name"],params["array"])})
     d.update({"full_sim_ms":params["path"]+"/"+d["sim_ms"]})
+    # TODO: Add the update of the antenna configuration
     params.update(d)
     # Makems parset name
     params.update({"makems_parset":"%(path)s/makems_%(name)s_%(array)s.parset"%params})
@@ -193,7 +195,8 @@ def create_path(path):
         os.makedirs(path)
 
 
-# Command line parser
+## Command line parser
+
 def main(args):
     params.update({"path":args.path})
     source_params.update({"path":args.path})
