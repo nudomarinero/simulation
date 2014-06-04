@@ -177,8 +177,12 @@ def update_source_params(source,default_skymodel):
     """
     Create the dictionary with the parameters for the simulated source(s)
     """
+    if (default_skymodel is not None):
+        skymodel = default_skymodel
+    else:
+        skymodel = source_model.get(source,default_skymodel)
     source_params.update({"sim_name":params["sim_ms"].split(".")[0]+"_%s.MS"%source,
-                          "skymodel":source_model.get(source,default_skymodel),
+                          "skymodel":skymodel,
                           "source_patch":source_name.get(source,source),
                           "source":source,
                           "logfile":"log_%s_%s.txt"%(params["name"],source),
