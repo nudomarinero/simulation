@@ -81,7 +81,7 @@ source_params = {}
 antenna_confs = ["LBA_INNER","LBA_OUTER","LBA_SPARSE_EVEN","LBA_SPARSE_ODD","LBA_X",
                  "LBA_Y","HBA_ZERO","HBA_ONE","HBA_DUAL","HBA_JOINED","HBA_ZERO_INNER",
                  "HBA_ONE_INNER","HBA_DUAL_INNER","HBA_JOINED_INNER"]
-antenna_ba = {ant:ant.split("_")[0] for ant in antenna_confs}
+#antenna_ba = {ant:ant.split("_")[0] for ant in antenna_confs}
 
 
 ##############
